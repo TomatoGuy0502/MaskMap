@@ -37,3 +37,6 @@ p{
 .numbers{
   font-size: 16px;
 }
+.soldOut{
+  color:#f00;
+}

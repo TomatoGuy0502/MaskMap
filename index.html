@@ -59,10 +59,13 @@
                 let marker = new google.maps.Marker({
                   position: latLng,
                   map: this.map,
-                  icon: './mask.png'
                 });
-
-                // var contentString = '<div class="content">' +  + '</div>';
+                //有剩餘數量才顯示口罩 否則為一般的圖標
+                if(item.properties.mask_adult || item.properties.mask_child){
+                  marker.setIcon('./image/mask.png')
+                } else {
+                  marker.setIcon('./image/no_mask.png')
+                }
 
                 google.maps.event.addListener(marker, 'click', (function(marker, item) {
                   return function() {
