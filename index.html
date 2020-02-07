@@ -11,7 +11,42 @@
   <body>
     <div id="app">
       <div id="map"></div>
-      <div class="updatedTime">最後更新時間：</br>{{updatedTime}}</div>
+      <div class="control_panel">
+        <div class="updatedTime">最後更新時間：</br>{{updatedTime}}</div>
+        <button class="btn_check" @click="drawer = true">查看有口罩診所</button>
+      </div>
+        <div class="bottom_drawer__layer" v-show="drawer" @click.self="drawer = false">
+          <transition name="fade">
+            <div class="bottom_drawer" v-show="drawer">
+              <div class="city_filter">
+                <span>選擇縣市</span>
+                <select v-model="citySelected">
+                  <option disabled>請選擇</option>
+                  <option v-for="(list, cityName) in cityList">{{cityName}}</option>
+                </select>
+              </div>
+              <div class="city_list" v-if="citySelected != '請選擇'">
+                <table>
+                  <thead style="background-color:#212529; color:#fff;">
+                    <tr>
+                      <th>診所</th><th>成人口罩</th><th>兒童口罩</th><th>地址</th><th>電話</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="pharmacy in cityList[citySelected]">
+                      <td>{{pharmacy.name}}</td>
+                      <td>{{pharmacy.mask_adult}}</td>
+                      <td>{{pharmacy.mask_child}}</td>
+                      <td>{{pharmacy.address}}</td>
+                      <td>{{pharmacy.phone}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </transition>
+        </div>
+      
     </div>
     
     
@@ -20,8 +55,33 @@
         el: '#app',
         data: {
           map: null,
-          pharmacyList: [],
-          updatedTime:''
+          // pharmacyList: [],
+          updatedTime:'',
+          drawer: false,
+          hasMaskList: [],
+          cityList: {
+            "台北": [],
+            "新北": [],
+            "基隆": [],
+            "宜蘭": [],
+            "桃園": [],
+            "新竹": [],
+            "苗栗": [],
+            "台中": [],
+            "彰化": [],
+            "南投": [],
+            "雲林": [],
+            "嘉義": [],
+            "台南": [],
+            "高雄": [],
+            "屏東": [],
+            "澎湖": [],
+            "花蓮": [],
+            "台東": [],
+            "金門": [],
+            "連江": [],
+          },
+          citySelected: '請選擇'
         },
         methods: {
           initMap() {
@@ -47,26 +107,33 @@
           },
           getData() {
             axios
-            .get('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json?fbclid=IwAR3gV7DKwPyHAv6Q-5bE_EhwFui4ivWa5PVmvNfWntMEUzLMIdqFChNpHWA')
+            .get('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json')
             .then(response =>{
-              this.pharmacyList = response.data.features;
-              this.updatedTime = this.pharmacyList[0].properties.updated
+              // this.pharmacyList = response.data.features;
+              // this.updatedTime = this.pharmacyList[1].properties.updated;
 
+              const vm = this;
               var infowindow = new google.maps.InfoWindow();
-              this.pharmacyList.forEach( (item) => {
-                var latLng = new google.maps.LatLng(item.geometry.coordinates[1], item.geometry.coordinates[0]);
+              response.data.features.forEach( (item) => {
+                if(!this.updatedTime && item.properties.updated){
+                  this.updatedTime = item.properties.updated
+                }
 
+                var latLng = new google.maps.LatLng(item.geometry.coordinates[1], item.geometry.coordinates[0]);
+                //==========設定圖標內容==========
                 let marker = new google.maps.Marker({
                   position: latLng,
                   map: this.map,
                 });
                 //有剩餘數量才顯示口罩 否則為一般的圖標
                 if(item.properties.mask_adult || item.properties.mask_child){
+                  vm.hasMaskList.push(item.properties)
                   marker.setIcon('./image/mask.png')
                 } else {
                   marker.setIcon('./image/no_mask.png')
                 }
 
+                //==========設定info視窗==========
                 google.maps.event.addListener(marker, 'click', (function(marker, item) {
                   return function() {
                     infowindow.setContent(
@@ -83,9 +150,23 @@
                   }
                 })(marker, item));
 
-              })
+              });
+              this.classifyCity()
             });
           },
+          classifyCity() {
+            //==========行政區分類==========
+            this.hasMaskList.forEach( (city, index, arr) => {
+              if(city.address[0] == '臺'){
+                arr[index].address = arr[index].address.replace('臺','台')
+              }else if(city.address[0] == '淡'){
+                arr[index].address = '新北' + arr[index].address
+              }
+              this.cityList[city.address.slice(0,2)].push(city)
+            })
+            // this.map.setCenter(new google.maps.LatLng(-34, 151));
+            // this.map.setZoom(5)
+          }
         },
         created() {
           window.onload = () => {
