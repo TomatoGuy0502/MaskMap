@@ -12,6 +12,7 @@ p{
 }
 table{
   border-collapse: collapse;
+  width: 100%;
 }
 #app, #map{
   width: 100%;
