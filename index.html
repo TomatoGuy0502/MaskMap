@@ -19,8 +19,8 @@
           <transition name="fade">
             <div class="bottom_drawer" v-show="drawer">
               <div class="city_filter">
-                <span>選擇縣市</span>
-                <select v-model="citySelected">
+                <span style="font-size: 20px;">選擇縣市</span>
+                <select style="border-radius:5px; font-size: 16px;" v-model="citySelected">
                   <option disabled>請選擇</option>
                   <option v-for="(list, cityName) in cityList">{{cityName}}</option>
                 </select>
@@ -33,7 +33,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="pharmacy in cityList[citySelected]">
+                    <tr v-for="(pharmacy, index) in cityList[citySelected]" :class="{list_item_even : index % 2 == 0}">
                       <td>{{pharmacy.name}}</td>
                       <td>{{pharmacy.mask_adult}}</td>
                       <td>{{pharmacy.mask_child}}</td>
@@ -162,7 +162,9 @@
               }else if(city.address[0] == '淡'){
                 arr[index].address = '新北' + arr[index].address
               }
-              this.cityList[city.address.slice(0,2)].push(city)
+              if(city.address[0] != '為' && city.address!= ''){
+                this.cityList[city.address.slice(0,2)].push(city)
+              }
             })
             // this.map.setCenter(new google.maps.LatLng(-34, 151));
             // this.map.setZoom(5)
