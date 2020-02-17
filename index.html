@@ -109,25 +109,22 @@
             axios
             .get('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json')
             .then(response =>{
-              // this.pharmacyList = response.data.features;
-              // this.updatedTime = this.pharmacyList[1].properties.updated;
-
-              const vm = this;
               var infowindow = new google.maps.InfoWindow();
               response.data.features.forEach( (item) => {
+
+                //==========顯示更新時間==========
                 if(!this.updatedTime && item.properties.updated){
                   this.updatedTime = item.properties.updated
                 }
 
-                var latLng = new google.maps.LatLng(item.geometry.coordinates[1], item.geometry.coordinates[0]);
                 //==========設定圖標內容==========
                 let marker = new google.maps.Marker({
-                  position: latLng,
+                  position: {lat:item.geometry.coordinates[1], lng:item.geometry.coordinates[0]},
                   map: this.map,
                 });
                 //有剩餘數量才顯示口罩 否則為一般的圖標
                 if(item.properties.mask_adult || item.properties.mask_child){
-                  vm.hasMaskList.push(item.properties)
+                  this.hasMaskList.push(item.properties)
                   marker.setIcon('./image/mask.png')
                 } else {
                   marker.setIcon('./image/no_mask.png')
@@ -166,8 +163,6 @@
                 this.cityList[city.address.slice(0,2)].push(city)
               }
             })
-            // this.map.setCenter(new google.maps.LatLng(-34, 151));
-            // this.map.setZoom(5)
           }
         },
         created() {
