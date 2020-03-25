@@ -6,7 +6,9 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/markerclustererplus/2.1.4/markerclusterer.min.js"></script> -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoma4dB8ZXyRUgonlHmCLMQorqoI2MK38" async defer></script>
+    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
   </head>
   <body>
     <div id="app">
@@ -15,37 +17,37 @@
         <div class="updatedTime">最後更新時間：</br>{{updatedTime}}</div>
         <button class="btn_check" @click="drawer = true">查看有口罩診所</button>
       </div>
-        <div class="bottom_drawer__layer" v-show="drawer" @click.self="drawer = false">
-          <transition name="fade">
-            <div class="bottom_drawer" v-show="drawer">
-              <div class="city_filter">
-                <span style="font-size: 20px;">選擇縣市</span>
-                <select style="border-radius:5px; font-size: 16px;" v-model="citySelected">
-                  <option disabled>請選擇</option>
-                  <option v-for="(list, cityName) in cityList">{{cityName}}</option>
-                </select>
-              </div>
-              <div class="city_list" v-if="citySelected != '請選擇'">
-                <table>
-                  <thead style="background-color:#212529; color:#fff;">
-                    <tr>
-                      <th>診所</th><th>成人口罩</th><th>兒童口罩</th><th>地址</th><th>電話</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(pharmacy, index) in cityList[citySelected]" :class="{list_item_even : index % 2 == 0}">
-                      <td>{{pharmacy.name}}</td>
-                      <td>{{pharmacy.mask_adult}}</td>
-                      <td>{{pharmacy.mask_child}}</td>
-                      <td>{{pharmacy.address}}</td>
-                      <td>{{pharmacy.phone}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+      <div class="bottom_drawer__layer" v-show="drawer" @click.self="drawer = false">
+        <transition name="fade">
+          <div class="bottom_drawer" v-show="drawer">
+            <div class="city_filter">
+              <span style="font-size: 20px;">選擇縣市</span>
+              <select style="border-radius:5px; font-size: 16px;" v-model="citySelected">
+                <option disabled>請選擇</option>
+                <option v-for="(list, cityName) in cityList">{{cityName}}</option>
+              </select>
             </div>
-          </transition>
-        </div>
+            <div class="city_list" v-if="citySelected != '請選擇'">
+              <table>
+                <thead style="background-color:#212529; color:#fff;">
+                  <tr>
+                    <th>診所</th><th>成人口罩</th><th>兒童口罩</th><th>地址</th><th>電話</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(pharmacy, index) in cityList[citySelected]" :class="{list_item_even : index % 2 == 0}">
+                    <td>{{pharmacy.name}}</td>
+                    <td>{{pharmacy.mask_adult}}</td>
+                    <td>{{pharmacy.mask_child}}</td>
+                    <td>{{pharmacy.address}}</td>
+                    <td>{{pharmacy.phone}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </transition>
+      </div>
       
     </div>
     
@@ -103,6 +105,7 @@
                 }
               ]
             });
+            
             // this.map.data.loadGeoJson('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json?fbclid=IwAR3gV7DKwPyHAv6Q-5bE_EhwFui4ivWa5PVmvNfWntMEUzLMIdqFChNpHWA')
           },
           getData() {
@@ -110,6 +113,7 @@
             .get('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json')
             .then(response =>{
               var infowindow = new google.maps.InfoWindow();
+              var markers = [];
               response.data.features.forEach( (item) => {
 
                 //==========顯示更新時間==========
@@ -122,25 +126,27 @@
                   position: {lat:item.geometry.coordinates[1], lng:item.geometry.coordinates[0]},
                   map: this.map,
                 });
+                markers.push(marker);
+
                 //有剩餘數量才顯示口罩 否則為一般的圖標
-                if(item.properties.mask_adult || item.properties.mask_child){
-                  this.hasMaskList.push(item.properties)
-                  marker.setIcon('./image/mask.png')
-                } else {
-                  marker.setIcon('./image/no_mask.png')
-                }
+                // if(item.properties.mask_adult || item.properties.mask_child){
+                //   this.hasMaskList.push(item.properties)
+                //   marker.setIcon('./image/mask.png')
+                // } else {
+                //   marker.setIcon('./image/no_mask.png')
+                // }
 
                 //==========設定info視窗==========
-                google.maps.event.addListener(marker, 'click', (function(marker, item) {
+                marker.addListener('click', (function(marker, item) {
                   return function() {
                     infowindow.setContent(
                       '<div class="info_content">'+
-                        '<p class="name">' + item.properties.name + '</p>'+
-                        '<div class="numbers">'+
+                        '<p class="info_content__name">' + item.properties.name + '</p>'+
+                        '<div class="info_content__numbers">'+
                           '<p>' + '成人口罩：' + item.properties.mask_adult + '</p>'+
                           '<p>' + '兒童口罩：' + item.properties.mask_child + '</p>'+
                         '</div>'+
-                        '<p class="address">'+ '地址：' + item.properties.address + '</p>'+
+                        '<p class="info_content__address">'+ '地址：' + item.properties.address + '</p>'+
                       '</div>'
                     );
                     infowindow.open(map, marker);
@@ -148,6 +154,9 @@
                 })(marker, item));
 
               });
+              var markerCluster = new MarkerClusterer(this.map, markers, {
+      imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+    });
               this.classifyCity()
             });
           },

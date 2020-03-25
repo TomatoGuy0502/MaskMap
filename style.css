@@ -78,12 +78,12 @@ table{
   font-size: 16px;
 }
 
-.info_content .name{
+.info_content__name{
   font-size: 20px;
   border-bottom: 1px solid #000;
   text-align: center;
 }
-.numbers{
+.info_content__numbers{
   font-size: 16px;
 }
 .soldOut{
