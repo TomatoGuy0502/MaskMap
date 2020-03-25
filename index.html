@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/markerclustererplus/2.1.4/markerclusterer.min.js"></script> -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoma4dB8ZXyRUgonlHmCLMQorqoI2MK38" async defer></script>
-    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js"></script>
+    <script type="text/javascript" src="./js/markerclustererplus@4.0.1.min.js"></script>
   </head>
   <body>
     <div id="app">
@@ -88,8 +88,8 @@
         methods: {
           initMap() {
             this.map = new google.maps.Map(document.getElementById('map'), {
-              center: {lat: 22.9958252, lng: 120.2106385},
-              zoom: 14.5,
+              center: {lat: 23.0188459, lng: 120.1957001},
+              zoom: 13,
               mapTypeId: 'roadmap',
               fullscreenControl: false,
               mapTypeControl: false,
@@ -128,13 +128,13 @@
                 });
                 markers.push(marker);
 
-                //有剩餘數量才顯示口罩 否則為一般的圖標
-                // if(item.properties.mask_adult || item.properties.mask_child){
-                //   this.hasMaskList.push(item.properties)
-                //   marker.setIcon('./image/mask.png')
-                // } else {
-                //   marker.setIcon('./image/no_mask.png')
-                // }
+                // 有剩餘數量才顯示口罩 否則為一般的圖標
+                if(item.properties.mask_adult || item.properties.mask_child){
+                  this.hasMaskList.push(item.properties)
+                  marker.setIcon('./images/mask.png')
+                } else {
+                  marker.setIcon('./images/no_mask.png')
+                }
 
                 //==========設定info視窗==========
                 marker.addListener('click', (function(marker, item) {
@@ -155,8 +155,8 @@
 
               });
               var markerCluster = new MarkerClusterer(this.map, markers, {
-      imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-    });
+                gridSize: 80,
+              });
               this.classifyCity()
             });
           },
