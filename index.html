@@ -159,7 +159,8 @@
               }else if(city.address[0] == '淡'){
                 arr[index].address = '新北' + arr[index].address
               }
-              if(city.address[0] != '為' && city.address!= ''){
+              //地址的前2字有在cityList內才存入
+              if(Object.keys(this.cityList).indexOf(arr[index].address.slice(0,2)) != -1){
                 this.cityList[city.address.slice(0,2)].push(city)
               }
             })
