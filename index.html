@@ -1,7 +1,7 @@
 <!DOCTYPE html>
   <head>
     <meta charset="utf-8">
-    <title>全台藥局口罩數量查詢</title>
+    <title>口罩即時查</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
@@ -17,9 +17,9 @@
         <div class="updatedTime">最後更新時間：</br>{{updatedTime}}</div>
         <button class="btn_check" @click="drawer = true">查看有口罩診所</button>
       </div>
-      <div class="control_drawer_layer" v-show="drawer" @click.self="drawer = false">
-        <transition name="fade">
-          <div class="control_drawer" v-show="drawer">
+      <div class="control_drawer_layer" v-show="drawer" @click.self="drawer = false"></div>
+        <!-- <transition name="fade"> -->
+          <div class="control_drawer" :class="{drawer_show : drawer}">
             <div class="control_drawer__info">
               <h1>即時口罩地圖</h1>
               <div>
@@ -34,13 +34,40 @@
             </div>
             <div class="control_drawer__search">
               <label for="search">用地址查詢</label>
-              <input type="search" id="search" placeholder="請輸入地址" autocomplete="off">
-              <i class="fas fa-search"></i>
+              <div class="search_wrapper">
+                <input type="search" id="search" placeholder="請輸入地址" autocomplete="off">
+                <i class="fas fa-search"></i>
+              </div>
+              <div class="filter_wrapper">
+                  <button class="filter_btn">所有口罩</button>
+                  <button class="filter_btn">成人口罩</button>
+                  <button class="filter_btn">兒童口罩</button>
+                </div>
             </div>
-            <div class="control_drawer__list"></div>
+            <div class="control_drawer__list">
+
+              <div class="list_wrapper">
+                <div class="list_item" v-for="shop in cityList['台南']">
+                  <p class="list_item__name">{{shop.name}}</p>
+                  <p class="list_item__address">{{shop.address}}</p>
+                  <p class="list_item__number">{{shop.phone}}</p>
+                  <p class="list_item__time">今日營業時間：Closing soon: 9am–10pm</p>
+                  <div class="mask_number">
+                    <div class="mask_number__item">
+                      <span>成人</span>
+                      <p>{{shop.mask_adult}}</p>
+                    </div>
+                    <div class="mask_number__item">
+                      <span>兒童</span>
+                      <p>{{shop.mask_child}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </transition>
-      </div>
+        <!-- </transition> -->
+
       
     </div>
     
@@ -118,7 +145,7 @@
             .then(response =>{
               var infowindow = new google.maps.InfoWindow();
               var markers = [];
-              response.data.features.forEach( (item) => {
+              response.data.features.forEach( item => {
                 this.shopList.push(item.properties)
 
                 //==========顯示更新時間==========
@@ -160,7 +187,7 @@
 
               });
               var markerCluster = new MarkerClusterer(this.map, markers, {
-                gridSize: 40,
+                gridSize: 80,
               });
               this.classifyCity()
             });
