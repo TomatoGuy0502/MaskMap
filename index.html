@@ -4,9 +4,9 @@
     <title>全台藥局口罩數量查詢</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/markerclustererplus/2.1.4/markerclusterer.min.js"></script> -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDoma4dB8ZXyRUgonlHmCLMQorqoI2MK38" async defer></script>
     <script type="text/javascript" src="./js/markerclustererplus@4.0.1.min.js"></script>
   </head>
@@ -17,34 +17,27 @@
         <div class="updatedTime">最後更新時間：</br>{{updatedTime}}</div>
         <button class="btn_check" @click="drawer = true">查看有口罩診所</button>
       </div>
-      <div class="bottom_drawer__layer" v-show="drawer" @click.self="drawer = false">
+      <div class="control_drawer_layer" v-show="drawer" @click.self="drawer = false">
         <transition name="fade">
-          <div class="bottom_drawer" v-show="drawer">
-            <div class="city_filter">
-              <span style="font-size: 20px;">選擇縣市</span>
-              <select style="border-radius:5px; font-size: 16px;" v-model="citySelected">
-                <option disabled>請選擇</option>
-                <option v-for="(list, cityName) in cityList">{{cityName}}</option>
-              </select>
+          <div class="control_drawer" v-show="drawer">
+            <div class="control_drawer__info">
+              <h1>即時口罩地圖</h1>
+              <div>
+                <p class="source">資料來源：<a href="">這裡</a></p>
+                <p class="date">{{date}}</p>
+              </div>
             </div>
-            <div class="city_list" v-if="citySelected != '請選擇'">
-              <table>
-                <thead style="background-color:#212529; color:#fff;">
-                  <tr>
-                    <th>診所</th><th>成人口罩</th><th>兒童口罩</th><th>地址</th><th>電話</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(pharmacy, index) in cityList[citySelected]" :class="{list_item_even : index % 2 == 0}">
-                    <td>{{pharmacy.name}}</td>
-                    <td>{{pharmacy.mask_adult}}</td>
-                    <td>{{pharmacy.mask_child}}</td>
-                    <td>{{pharmacy.address}}</td>
-                    <td>{{pharmacy.phone}}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="control_drawer__reminder">
+              <p class="day_of_week">{{dayOfWeek}}</p>
+              <p class="id_number">{{lastIdNumber}}</p>
+              <img src="./images/banner_announce_fix.png" alt="Reminder">
             </div>
+            <div class="control_drawer__search">
+              <label for="search">用地址查詢</label>
+              <input type="search" id="search" placeholder="請輸入地址" autocomplete="off">
+              <i class="fas fa-search"></i>
+            </div>
+            <div class="control_drawer__list"></div>
           </div>
         </transition>
       </div>
@@ -57,10 +50,13 @@
         el: '#app',
         data: {
           map: null,
-          // pharmacyList: [],
+          dayOfWeek: "",
+          lastIdNumber:"",
+          date: "",
           updatedTime:'',
           drawer: false,
           hasMaskList: [],
+          shopList: [],
           cityList: {
             "台北": [],
             "新北": [],
@@ -88,8 +84,8 @@
         methods: {
           initMap() {
             this.map = new google.maps.Map(document.getElementById('map'), {
-              center: {lat: 23.0188459, lng: 120.1957001},
-              zoom: 13,
+              center: {lat: 22.9926135, lng: 120.2173127},
+              zoom: 14,
               mapTypeId: 'roadmap',
               fullscreenControl: false,
               mapTypeControl: false,
@@ -102,7 +98,15 @@
                       "visibility": "simplified"
                     }
                   ]
-                }
+                },
+                {
+                  "featureType": "poi.business",
+                  "stylers": [
+                    {
+                      "visibility": "off"
+                    }
+                  ]
+                },
               ]
             });
             
@@ -115,6 +119,7 @@
               var infowindow = new google.maps.InfoWindow();
               var markers = [];
               response.data.features.forEach( (item) => {
+                this.shopList.push(item.properties)
 
                 //==========顯示更新時間==========
                 if(!this.updatedTime && item.properties.updated){
@@ -131,7 +136,7 @@
                 // 有剩餘數量才顯示口罩 否則為一般的圖標
                 if(item.properties.mask_adult || item.properties.mask_child){
                   this.hasMaskList.push(item.properties)
-                  marker.setIcon('./images/mask.png')
+                  marker.setIcon('./images/doctor.png')
                 } else {
                   marker.setIcon('./images/no_mask.png')
                 }
@@ -155,7 +160,7 @@
 
               });
               var markerCluster = new MarkerClusterer(this.map, markers, {
-                gridSize: 80,
+                gridSize: 40,
               });
               this.classifyCity()
             });
@@ -173,9 +178,20 @@
                 this.cityList[city.address.slice(0,2)].push(city)
               }
             })
+          },
+          setInfo() {
+            let dayOfWeek = new Date().getDay();
+            this.dayOfWeek = "星期"+"日一二三四五六".charAt(dayOfWeek);
+            if(dayOfWeek === 0){
+              this.lastIdNumber = "任意數字";
+            }else{
+              this.lastIdNumber = dayOfWeek % 2 ? "1.3.5.7.9" : "0.2.4.6.8";
+            };
+            this.date = new Date().getFullYear()+ "年" + (new Date().getMonth()+1) + "月" + new Date().getDate() + "日";
           }
         },
         created() {
+          this.setInfo();
           window.onload = () => {
             this.initMap();
             this.getData();
