@@ -62,7 +62,6 @@ input:focus{
   width: 400px;
   height: 100vh;
   background-color: #F7F7F7;
-  box-shadow: 2px 0px 10px 4px #47474750;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
   padding-top: 15px;
@@ -72,6 +71,8 @@ input:focus{
 }
 .drawer_show{
   left: 0;
+  box-shadow: 2px 0px 10px 4px #47474750;
+
 }
 
 
@@ -107,6 +108,7 @@ input:focus{
   -ms-user-select: none;
   user-select: none;
   position: relative;
+  margin: -5px 0;
 }
 .control_drawer__reminder img{
   width: 100%;
@@ -133,10 +135,41 @@ input:focus{
   padding:0 15px;
   margin-bottom: 10px;
 }
+.city_filter{
+  width: 175px;
+  border-radius: 50px;
+  border: 1px solid #707070;
+  padding: 8px 15px;
+  color: #707070;
+  font-size: 15px;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.arrow1, .arrow2{
+  position: absolute;
+  top: 13px;
+  border: solid #707070;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transition: all 0.3s ease-in;
+  transform-origin: center;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+.arrow1 {
+  left: 155px;
+}
+.arrow2 {
+  right: 10px;
+}
 .control_drawer__search label{
   margin-bottom: 5px;
   color: #707070;
   font-weight: 700;
+  margin-top: 10px;
 }
 .search_wrapper{
   border: 1px solid #707070;
@@ -145,12 +178,14 @@ input:focus{
   align-items: center;
   padding-left: 15px;
   background-color: #fff;
+  margin-bottom: 10px;
 }
 .search_wrapper input{
   background-color: transparent;
   border: none;
   flex: 1 1 auto;
-  padding: 10px 0;
+  font-size: 16px;
+  padding: 9px 0;
   color: #707070;
 }
 .search_wrapper i{
@@ -160,9 +195,9 @@ input:focus{
   color: #707070;
 }
 .filter_wrapper{
+  position: relative;
   display: flex;
   justify-content: space-between;
-  margin-top: 20px;
 }
 .filter_btn{
   width: 110px;
@@ -176,7 +211,11 @@ input:focus{
   outline: none;
   cursor: pointer;
 }
-
+.filter_btn.active {
+  background-color: #EF8A00;
+  color: #fff;
+  border: none;
+}
 
 .control_drawer__list{
   flex: 1 1 auto;
@@ -190,6 +229,7 @@ input:focus{
   box-shadow: 1px 1px 15px #70707029;
   color: #707070;
   margin-bottom: 20px;
+  cursor: pointer;
 }
 .list_item>p{
   margin-bottom: 4px;
@@ -232,12 +272,9 @@ input:focus{
   font-weight: 700;
 }
 
-.fade-enter-active{
-  transition: left .3s ease-in;
-}
-.fade-enter{
-  left: -400px;
-}
-.fade-enter-to{
-  left: 0;
+.info_content{
+  font-size: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
