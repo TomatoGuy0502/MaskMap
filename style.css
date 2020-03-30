@@ -89,8 +89,9 @@ input:focus{
 .control_drawer__info h1{
   color: #707070;
 }
-.control_drawer__info div{
+.control_drawer__info .data_source{
   text-align: right;
+  margin-bottom: 3px;
 }
 .control_drawer__info p.source{
   font-size: 0.8em;
@@ -99,6 +100,47 @@ input:focus{
 .control_drawer__info p.date{
   color: #707070;
   font-weight: 700;
+}
+.hamburger{
+  position: relative;
+  right: -65px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 40px;
+  padding: 8px 10px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #70707095;
+  transition: all 0.5s ease-in;
+  cursor: pointer;
+}
+.drawer_show .hamburger{
+  right: 0;
+  padding: 8px 0;
+  background-color: transparent;
+}
+.drawer_show .hamburger div{
+  background-color: #707070;
+}
+.hamburger__bar1, .hamburger__bar2, .hamburger__bar3{
+  border-radius: 10px;
+  width: 30px;
+  height: 4px;
+  background-color: #f7f7f7;
+  transition: 0.4s;
+  transform-origin: center;
+}
+.drawer_show .hamburger__bar1{
+  -webkit-transform: translate(0px,10px) rotate(-45deg);
+  transform: translate(0px, 10px) rotate(-45deg);
+}
+.drawer_show .hamburger__bar2{
+  opacity: 0;
+}
+.drawer_show .hamburger__bar3{
+  -webkit-transform: translate(0px,-10px) rotate(45deg);
+  transform: translate(0px, -10px) rotate(45deg);
 }
 
 
@@ -156,6 +198,7 @@ input:focus{
   padding: 3px;
   transition: all 0.3s ease-in;
   transform-origin: center;
+  pointer-events:none; 
   transform: rotate(45deg);
   -webkit-transform: rotate(45deg);
 }

@@ -13,16 +13,18 @@
   <body>
     <div id="app">
       <div id="map"></div>
-      <div class="control_panel">
-        <button class="btn_check" @click="drawer = true">查看有口罩診所</button>
-      </div>
       <div class="control_drawer_layer" v-show="drawer" @click.self="drawer = false"></div>
       <div class="control_drawer" :class="{drawer_show : drawer}">
         <div class="control_drawer__info">
           <h1>即時口罩地圖</h1>
-          <div>
+          <div class="data_source">
             <p class="source">資料來源：<a href="">這裡</a></p>
             <p class="date">{{todayInfo.date}}</p>
+          </div>
+          <div class="hamburger" @click="drawer = !drawer">
+            <div class="hamburger__bar1"></div>
+            <div class="hamburger__bar2"></div>
+            <div class="hamburger__bar3"></div>
           </div>
         </div>
         <div class="control_drawer__reminder">
