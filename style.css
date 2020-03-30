@@ -72,7 +72,6 @@ input:focus{
 .drawer_show{
   left: 0;
   box-shadow: 2px 0px 10px 4px #47474750;
-
 }
 
 
@@ -178,7 +177,7 @@ input:focus{
   margin-bottom: 10px;
 }
 .city_filter{
-  width: 175px;
+  width: 47%;
   border-radius: 50px;
   border: 1px solid #707070;
   padding: 8px 15px;
@@ -203,10 +202,10 @@ input:focus{
   -webkit-transform: rotate(45deg);
 }
 .arrow1 {
-  left: 155px;
+  left: 40%;
 }
 .arrow2 {
-  right: 10px;
+  right: 4%;
 }
 .control_drawer__search label{
   margin-bottom: 5px;
@@ -243,7 +242,7 @@ input:focus{
   justify-content: space-between;
 }
 .filter_btn{
-  width: 110px;
+  width: 30%;
   border-radius: 50px;
   border: 1px solid #707070;
   background-color: #fff;
@@ -298,7 +297,7 @@ input:focus{
 .mask_number__item{
   background-color:#EF8A00;
   border-radius: 20px;
-  width: 155px;
+  width: 47%;
   padding: 0 20px;
   color: #fff;
   display: flex;
@@ -320,4 +319,24 @@ input:focus{
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+@media (max-width:400px) {
+  .control_drawer{
+    left: -100vw;
+    width: 100vw;
+  }
+  .drawer_show{
+    left: 0;
+    box-shadow: 2px 0px 10px 4px #47474750;
+  }
+  .control_drawer__info .data_source{
+    display: none;
+  }
+  .control_drawer__reminder{
+    display: none;
+  }
+  .mask_number__item{
+    padding:0 10px;
+  }
 }
