@@ -13,6 +13,11 @@
   </head>
   <body>
     <div id="app">
+      <div class="loading" v-show="loading">
+        <h1>即時口罩地圖</h1>
+        <p>資料讀取中，請稍候</p>
+        <div class="loader"></div>
+      </div>
       <div id="map"></div>
       <div class="control_drawer_layer" v-show="drawer" @click.self="drawer = false"></div>
       <div class="control_drawer" :class="{drawer_show : drawer}">
@@ -144,6 +149,7 @@
           cityFilterCounty: "臺南市",
           cityFilterTown: "",
           maskFilter: "all",
+          loading: true,
         },
         methods: {
           initMap() {
@@ -179,8 +185,8 @@
             if(level===1) this.cityFilterTown = ""
             this.searchString = ""
           },
-          getData() {
-            axios
+          async getData() {
+            await axios
             .get('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json')
             .then(response =>{
               var infowindow = new google.maps.InfoWindow();
@@ -232,6 +238,9 @@
               //   gridSize: 60,
               // });
               // console.log(this.cityList);
+              setTimeout(()=>{
+                this.loading = false;
+              },500)
             });
           },
           setInfo() {
@@ -245,6 +254,9 @@
             this.todayInfo.date = new Date().getFullYear()+ "年" + (new Date().getMonth()+1) + "月" + new Date().getDate() + "日";
           },
           moveTo(item) {
+            if(window.innerWidth <= 400){
+              this.drawer = false;
+            }
             this.map.panTo({lat:item.geometry.coordinates[1], lng:item.geometry.coordinates[0]});
             this.map.setZoom(18);
           }
