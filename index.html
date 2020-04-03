@@ -190,11 +190,12 @@
             this.infowindow.setContent(
               '<div class="info_content">'+
                 '<p class="info_content__name">' + shop.properties.name + '</p>'+
+                '<p class="info_content__address">'+ shop.properties.address + '</p>'+
+                '<p class="info_content__phone">'+ shop.properties.phone + '</p>'+
                 '<div class="info_content__numbers">'+
                   '<p>' + '成人口罩：' + shop.properties.mask_adult + '</p>'+
                   '<p>' + '兒童口罩：' + shop.properties.mask_child + '</p>'+
                 '</div>'+
-                '<p class="info_content__address">'+ '地址：' + shop.properties.address + '</p>'+
               '</div>'
             );
           },
@@ -244,7 +245,7 @@
               });
               setTimeout(()=>{
                 this.loading = false;
-              },500)
+              },1500)
             });
           },
           setInfo() {
