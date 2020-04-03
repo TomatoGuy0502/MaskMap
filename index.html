@@ -64,7 +64,7 @@
         <div class="control_drawer__list">
 
           <div class="list_wrapper">
-            <div class="list_item" v-for="shop in searchMaskResults" :key="shop.properties.id" @click="moveTo(shop)">
+            <div class="list_item" v-for="shop in searchMaskResults" :key="shop.properties.id" @click="moveToShop(shop)">
               <p class="list_item__name">{{shop.properties.name}}</p>
               <p class="list_item__address">{{shop.properties.address}}</p>
               <p class="list_item__number">{{shop.properties.phone}}</p>
@@ -150,6 +150,7 @@
           cityFilterTown: "",
           maskFilter: "all",
           loading: true,
+          infowindow: null
         },
         methods: {
           initMap() {
@@ -185,11 +186,23 @@
             if(level===1) this.cityFilterTown = ""
             this.searchString = ""
           },
+          setWindowContent(shop){
+            this.infowindow.setContent(
+              '<div class="info_content">'+
+                '<p class="info_content__name">' + shop.properties.name + '</p>'+
+                '<div class="info_content__numbers">'+
+                  '<p>' + '成人口罩：' + shop.properties.mask_adult + '</p>'+
+                  '<p>' + '兒童口罩：' + shop.properties.mask_child + '</p>'+
+                '</div>'+
+                '<p class="info_content__address">'+ '地址：' + shop.properties.address + '</p>'+
+              '</div>'
+            );
+          },
           async getData() {
             await axios
             .get('https://raw.githubusercontent.com/kiang/pharmacies/master/json/points.json')
             .then(response =>{
-              var infowindow = new google.maps.InfoWindow();
+              this.infowindow = new google.maps.InfoWindow();
               var markers = [];
               response.data.features.forEach( item => {
 
@@ -210,17 +223,8 @@
                 //==========設定info視窗==========
                 marker.addListener('click', (function(marker, item) {
                   return function() {
-                    infowindow.setContent(
-                      '<div class="info_content">'+
-                        '<p class="info_content__name">' + item.properties.name + '</p>'+
-                        '<div class="info_content__numbers">'+
-                          '<p>' + '成人口罩：' + item.properties.mask_adult + '</p>'+
-                          '<p>' + '兒童口罩：' + item.properties.mask_child + '</p>'+
-                        '</div>'+
-                        '<p class="info_content__address">'+ '地址：' + item.properties.address + '</p>'+
-                      '</div>'
-                    );
-                    infowindow.open(map, marker);
+                    googleMap.setWindowContent(item);
+                    googleMap.infowindow.open(map, marker);
                   }
                 })(marker, item));
 
@@ -234,10 +238,10 @@
               }
 
               });
-              // var markerCluster = new MarkerClusterer(this.map, markers, {
-              //   gridSize: 60,
-              // });
-              // console.log(this.cityList);
+              var markerCluster = new MarkerClusterer(this.map, markers, {
+                gridSize: 60,
+                minClusterSize: 10,
+              });
               setTimeout(()=>{
                 this.loading = false;
               },500)
@@ -253,12 +257,15 @@
             };
             this.todayInfo.date = new Date().getFullYear()+ "年" + (new Date().getMonth()+1) + "月" + new Date().getDate() + "日";
           },
-          moveTo(item) {
+          moveToShop(item) {
             if(window.innerWidth <= 400){
               this.drawer = false;
             }
             this.map.panTo({lat:item.geometry.coordinates[1], lng:item.geometry.coordinates[0]});
             this.map.setZoom(18);
+            this.setWindowContent(item);
+            this.infowindow.setPosition({lat:item.geometry.coordinates[1]+0.00015, lng:item.geometry.coordinates[0]})
+            this.infowindow.open(this.map);
           }
         },
         computed: {
