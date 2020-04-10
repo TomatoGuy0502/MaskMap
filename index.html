@@ -241,8 +241,8 @@
               });
               var markerCluster = new MarkerClusterer(this.map, markers, {
                 gridSize: 60,
-                minClusterSize: 10,
-                imagePath: "./images/m"
+                minimumClusterSize: 3,
+                imagePath: "images/m"
               });
               setTimeout(()=>{
                 this.loading = false;
